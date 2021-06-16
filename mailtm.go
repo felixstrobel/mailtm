@@ -200,7 +200,7 @@ func (c *MailClient) Delete() {
 
 	res, err := client.Do(req)
 	if err != nil {
-		log.Fatal("Reqeuest failed: ", err)
+		log.Fatal("Request failed: ", err)
 	}
 
 	defer func(Body io.ReadCloser) {
@@ -222,7 +222,7 @@ func (c *MailClient) GetMessages(page int) []Message {
 
 	res, err := client.Do(req)
 	if err != nil {
-		log.Fatal("Reqeuest failed: ", err)
+		log.Fatal("Request failed: ", err)
 	}
 
 	defer func(Body io.ReadCloser) {
@@ -259,7 +259,7 @@ func (c *MailClient) GetMessage(id string) Message {
 
 	res, err := client.Do(req)
 	if err != nil {
-		log.Fatal("Reqeuest failed: ", err)
+		log.Fatal("Request failed: ", err)
 	}
 
 	defer func(Body io.ReadCloser) {
@@ -295,7 +295,7 @@ func (c *MailClient) DeleteMessage(id string) {
 
 	res, err := client.Do(req)
 	if err != nil {
-		log.Fatal("Reqeuest failed: ", err)
+		log.Fatal("Request failed: ", err)
 	}
 
 	defer func(Body io.ReadCloser) {
@@ -318,7 +318,7 @@ func (c *MailClient) MarkMessageAsSeen(id string) {
 
 	res, err := client.Do(req)
 	if err != nil {
-		log.Fatal("Reqeuest failed: ", err)
+		log.Fatal("Request failed: ", err)
 	}
 
 	defer func(Body io.ReadCloser) {
@@ -340,7 +340,7 @@ func (c *MailClient) GetMessageSource(id string) string {
 
 	res, err := client.Do(req)
 	if err != nil {
-		log.Fatal("Reqeuest failed: ", err)
+		log.Fatal("Request failed: ", err)
 	}
 
 	defer func(Body io.ReadCloser) {

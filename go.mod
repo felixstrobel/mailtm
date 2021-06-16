@@ -1,1 +1,1 @@
-module "mailtm"
+module "github.com/felixstrobel/mailtm"
