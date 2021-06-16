@@ -1,4 +1,4 @@
-package main
+package mailtm
 
 import (
 	"bytes"
@@ -189,7 +189,7 @@ func (c *MailClient) Login() {
 	c.BearerToken = tokenResponse.Token
 }
 func (c *MailClient) Delete() {
-	var client *http.Client = &http.Client{}
+	var client = &http.Client{}
 
 	req, err := http.NewRequest("DELETE", c.URL+"/accounts/"+c.Information.Id, nil)
 	if err != nil {
@@ -211,7 +211,7 @@ func (c *MailClient) Delete() {
 	}(res.Body)
 }
 func (c *MailClient) GetMessages(page int) []Message {
-	var client *http.Client = &http.Client{}
+	var client = &http.Client{}
 
 	req, err := http.NewRequest("GET", c.URL+"/messages?page="+strconv.Itoa(page), nil)
 	if err != nil {
@@ -248,7 +248,7 @@ func (c *MailClient) GetMessages(page int) []Message {
 	return messageResponse.Messages
 }
 func (c *MailClient) GetMessage(id string) Message {
-	var client *http.Client = &http.Client{}
+	var client = &http.Client{}
 
 	req, err := http.NewRequest("GET", c.URL+"/messages/"+id, nil)
 	if err != nil {
@@ -284,7 +284,7 @@ func (c *MailClient) GetMessage(id string) Message {
 	return message
 }
 func (c *MailClient) DeleteMessage(id string) {
-	var client *http.Client = &http.Client{}
+	var client = &http.Client{}
 
 	req, err := http.NewRequest("DELETE", c.URL+"/messages/"+id, nil)
 	if err != nil {
@@ -306,7 +306,7 @@ func (c *MailClient) DeleteMessage(id string) {
 	}(res.Body)
 }
 func (c *MailClient) MarkMessageAsSeen(id string) {
-	var client *http.Client = &http.Client{}
+	var client = &http.Client{}
 
 	req, err := http.NewRequest("PATCH", c.URL+"/messages/"+id, bytes.NewBufferString("true"))
 	if err != nil {
@@ -329,7 +329,7 @@ func (c *MailClient) MarkMessageAsSeen(id string) {
 	}(res.Body)
 }
 func (c *MailClient) GetMessageSource(id string) string {
-	var client *http.Client = &http.Client{}
+	var client = &http.Client{}
 
 	req, err := http.NewRequest("GET", c.URL+"/sources/"+id, nil)
 	if err != nil {
@@ -357,5 +357,3 @@ func (c *MailClient) GetMessageSource(id string) string {
 
 	return string(body)
 }
-
-func main() {}

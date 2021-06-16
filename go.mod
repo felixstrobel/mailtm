@@ -1,1 +1,3 @@
-module "github.com/felixstrobel/mailtm"
+module github.com/felixstrobel/mailtm
+
+go 1.16
