@@ -16,7 +16,6 @@ type User struct {
 	Address string `json:"address"`
 	Name    string `json:"name"`
 }
-
 type Domain struct {
 	Path      string    `json:"@id"`
 	Type      string    `json:"@type"`
@@ -34,11 +33,9 @@ type DomainResponse struct {
 	Domains     []Domain `json:"hydra:member"`
 	DomainCount int      `json:"hydra:totalItems"`
 }
-
 type TokenResponse struct {
 	Token string `json:"token"`
 }
-
 type Message struct {
 	Path           string    `json:"@id"`
 	Type           string    `json:"@type"`
@@ -64,7 +61,6 @@ type MessageResponse struct {
 	Messages     []Message `json:"hydra:member"`
 	MessageCount int       `json:"hydra:totalItems"`
 }
-
 type AccountInfo struct {
 	Context    string    `json:"@context"`
 	Path       string    `json:"@id"`
@@ -78,7 +74,6 @@ type AccountInfo struct {
 	CreatedAt  time.Time `json:"createdAt"`
 	UpdatedAt  time.Time `json:"updatedAt"`
 }
-
 type MailClient struct {
 	URL         string
 	Email       string
