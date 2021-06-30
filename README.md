@@ -32,7 +32,7 @@ var domains []Domain = client.GetAvailableDomains()
 
 Then you are able to register a new email. You can do this by using the `Register` function that takes a random username, one domain of the list you got in the step before and a password of your choice.
 ```golang
-client.Register("USERNAME", domains[0], "PASSWORD")
+client.Register("USERNAME", domains[0].Name, "PASSWORD")
 ```
 
 ### Logging in
