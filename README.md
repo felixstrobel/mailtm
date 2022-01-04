@@ -35,11 +35,14 @@ Then you are able to register a new email. You can do this by using the `Registe
 client.Register("USERNAME", domains[0].Name, "PASSWORD")
 ```
 
+The `Register` function calls automatically the `Login` function afterwards.
+
 ### Logging in
 
-After registering an email you have to log in to ave the full funcionality of the API. You don't have to do anything more than just calling the `Login` function.
+Alternatively to registering an email you are able to log in to an existing account.
+Just call the `Login` function with your known email and password.
 ```golang
-client.Login()
+client.Login("KNOWN_EMAIL@ADDRESS.com", "PASSWORD")
 ```
 This step fetched a Bearer-Token in the background which is used for authorization reasons. It's value is saved in:
 ```golang
@@ -92,6 +95,3 @@ To delete an email you can simply call the `Delete` function and the email will 
 ```golang
 client.Delete()
 ```
-
-
-

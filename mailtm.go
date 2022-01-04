@@ -153,10 +153,13 @@ func (c *MailClient) Register(username string, domain string, password string) e
 
 	c.Information = accountInfo
 
-	return nil
+	return c.Login(c.Email, c.Password)
 }
 
-func (c *MailClient) Login() error {
+func (c *MailClient) Login(email string, password string) error {
+	c.Email = email
+	c.Password = password
+
 	res, err := http.Post(
 		c.URL+"/token",
 		"application/json",
