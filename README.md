@@ -1,97 +1,63 @@
-# mail.tm wrapper
+# mailtm
 
-A [mail.tm](https://mail.tm) API wrapper written in Golang.
+The `mailtm` module wraps the [Mail.tm API](https://api.mail.tm) and provides full functionality. 
 
-## Installation
+This is the seconds version. It solves the login problem from version 1 and adds a login with existing credentials.
 
-If you have [Golang](https://golang.org/) installed and added to the PATH:
+If you like it, please consider giving it a :star:
 
-```bash
-go get github.com/felixstrobel/mailtm
+###### Install
+
+`go get github.com/felixstrobel/mailtm`
+
+###### Documentation
+
+Firstly, create an `MailClient` object. This is the object that communicates with the API and contains all important
+information.
+```go
+import "github.com/felixstrobel/mailtm"
+
+func main() {
+    client, err := mailtm.NewMailClient()
+}
 ```
 
-## Getting started
-
-### Create a client
-
-```golang
-var client *MailClient = NewMailClient()
+After that you can either create an account:
+```go
+client.GetDomains()
+client.CreateAccount()
 ```
+You have to fetch the available domains before creating an account (see above). The created account can be accessed through `client.Account`. The account's address and password are randomized.
 
-The default API address is set to `https://api.mail.tm`. If this address should change you can set the new one liek this:
-```golang
-client.URL =  "NEW_API_ADDRESS"
+If you already have an account and know the address and password, you can skip this step and go on with fetching the JWT token. 
+```go
+// if you don't have valid credentials:
+client.GetAuthToken()
+
+// if you have valid credentials:
+client.GetAuthTokenCredentials(yourAddress, yourPassword) 
 ```
+---
+You are authenticated now! You can begin...
 
-### Registering an email
-
-Before registering your first email you have to fetch the latest domains.
-```golang
-var domains []Domain = client.GetAvailableDomains()
+...fetching your messages:
+```go
+messages, err := client.GetMessages()
 ```
-
-Then you are able to register a new email. You can do this by using the `Register` function that takes a random username, one domain of the list you got in the step before and a password of your choice.
-```golang
-client.Register("USERNAME", domains[0].Name, "PASSWORD")
+...get details of a message:
+```go
+message, err := client.GetMessageByID(messages[0].ID)
 ```
-
-### Logging in
-
-After registering an email you have to log in to ave the full funcionality of the API. You don't have to do anything more than just calling the `Login` function.
-```golang
-client.Login()
+...delete one:
+```go
+client.DeleteMessageByID(message.ID)
 ```
-This step fetched a Bearer-Token in the background which is used for authorization reasons. It's value is saved in:
-```golang
-client.BearerToken
+...or update the seen status to true:
+```go
+client.SeenMessageByID(message.ID)
 ```
-
-### Get all messages
-
-To get all messages in your inbox from a page use:
-```golang
-var messages []Message = client.GetMessages(PAGE_NUMBER)
+---
+If you decide to delete an account, you can use the `DeleteAccountByID` function to do so:
+```go
+client.DeleteAccountByID(c.Account.ID)
 ```
-
-### Get one message
-
-Every message has its own id. You can access it via:
-```golang
-var messageId string = message.MessageId
-```
-
-To read just one message add this id to the `GetMessage` function:
-```golang
-var message Message = client.GetMessage(MESSAGE_ID)
-```
-
-### Marking a message as seen
-
-To mark a message as seen you can simply do:
-```golang
-client.MarkMessageAsSeen(MESSAGE_ID)
-```
-
-### Getting the raw message
-
-Getting the raw message in plaintext can be done like this:
-```golang
-var rawMessage string = client.GetMessageSource(MESSAGE_ID)
-```
-
-### Deleting a message
-
-Deleting a message can be archieved through caling the `DeleteMessage` function and passing in the message id.
-```golang
-client.DeleteMessage(MESSAGE_ID)
-```
-
-### Deleting an email
-
-To delete an email you can simply call the `Delete` function and the email will be deleted.
-```golang
-client.Delete()
-```
-
-
-
