@@ -47,7 +47,7 @@ type DetailedMessage struct {
 	Verifications  []string    `json:"verifications"`
 	Retention      bool        `json:"retention"`
 	RetentionDate  time.Time   `json:"retentionDate"`
-	Test           string      `json:"test"`
+	Text           string      `json:"text"`
 	Html           []string    `json:"html"`
 	HasAttachments bool        `json:"hasAttachments"`
 	Attachments    []string    `json:"attachments"`
