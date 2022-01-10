@@ -3,7 +3,6 @@ package mailtm
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -42,8 +41,6 @@ func (c *MailClient) GetAuthToken() (string, error) {
 		return "", err
 	}
 
-	fmt.Printf("[DEBUG] Requested token [%d]:\t\t%s:%s\n", res.StatusCode, c.Account.Address, c.Account.Password)
-
 	c.Token = tokenResponse.Token
 
 	return tokenResponse.Token, nil
@@ -78,8 +75,6 @@ func (c *MailClient) GetAuthTokenCredentials(address string, password string) (s
 	if err != nil {
 		return "", err
 	}
-
-	fmt.Printf("[DEBUG] Requested token [%d]:\t\t%s:%s\n", res.StatusCode, address, password)
 
 	c.Token = tokenResponse.Token
 	c.Account.Address = address

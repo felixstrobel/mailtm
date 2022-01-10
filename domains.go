@@ -3,7 +3,6 @@ package mailtm
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -47,8 +46,6 @@ func (c *MailClient) GetDomains() ([]Domain, error) {
 		return nil, errors.New("no domains found on the server")
 	}
 
-	fmt.Printf("[DEBUG] Fetched domains [%d]\n", res.StatusCode)
-
 	return domainResponse, nil
 }
 
@@ -75,8 +72,6 @@ func (c *MailClient) GetDomainByID(id string) (*Domain, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Printf("[DEBUG] Fetched domain [%d]:\t\t%s:%s\n", res.StatusCode, domainResponse.Path, id)
 
 	return &domainResponse, nil
 }

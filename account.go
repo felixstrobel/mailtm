@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -67,8 +66,6 @@ func (c *MailClient) CreateAccount() (*Account, error) {
 	account.Password = password
 	c.Account = account
 
-	fmt.Printf("[DEBUG] Created account [%d]:\t\t%s:%s\n", res.StatusCode, address, password)
-
 	return &account, nil
 }
 
@@ -115,12 +112,10 @@ func (c *MailClient) DeleteAccountByID(id string) error {
 	}
 
 	req.Header.Set("Authorization", "Bearer "+c.Token)
-	res, err := c.HttpClient.Do(req)
+	_, err = c.HttpClient.Do(req)
 	if err != nil {
 		return err
 	}
-
-	fmt.Printf("[DEBUG] Delete account [%d]:\t\t%s\n", res.StatusCode, id)
 
 	return nil
 }
@@ -149,8 +144,6 @@ func (c *MailClient) GetCurrentAccountInformation() (*Account, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Printf("[DEBUG] Get account [%d]:\t\t%s\n", res.StatusCode, account.Address)
 
 	return &account, nil
 }
