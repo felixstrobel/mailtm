@@ -3,82 +3,51 @@ package mailtm
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
-type TokenResponse struct {
+type Response struct {
+	ID    string `json:"id"`
 	Token string `json:"token"`
 }
 
-func (c *MailClient) GetAuthToken() (string, error) {
-	var tokenResponse TokenResponse
+func (c *MailClient) addAuthToken(account *Account) error {
+	var response Response
 
 	reqBody, err := json.Marshal(map[string]string{
-		"address":  c.Account.Address,
-		"password": c.Account.Password,
+		"address":  account.Address,
+		"password": account.Password,
 	})
 
-	req, err := http.NewRequest("POST", c.Service.Url+"/token", bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest("POST", string(c.service)+"/token", bytes.NewBuffer(reqBody))
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
-	res, err := c.HttpClient.Do(req)
+	res, err := c.http.Do(req)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	err = json.Unmarshal(body, &tokenResponse)
+	err = json.Unmarshal(body, &response)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	c.Token = tokenResponse.Token
+	account.Token = response.Token
 
-	return tokenResponse.Token, nil
-}
-
-func (c *MailClient) GetAuthTokenCredentials(address string, password string) (string, error) {
-	var tokenResponse TokenResponse
-
-	reqBody, err := json.Marshal(map[string]string{
-		"address":  address,
-		"password": password,
-	})
-
-	req, err := http.NewRequest("POST", c.Service.Url+"/token", bytes.NewBuffer(reqBody))
+	err = res.Body.Close()
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Content-Type", "application/json")
-	res, err := c.HttpClient.Do(req)
-	if err != nil {
-		return "", err
-	}
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return "", err
-	}
-
-	err = json.Unmarshal(body, &tokenResponse)
-	if err != nil {
-		return "", err
-	}
-
-	c.Token = tokenResponse.Token
-	c.Account.Address = address
-	c.Account.Password = password
-
-	return tokenResponse.Token, nil
+	return nil
 }
