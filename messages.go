@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -57,83 +57,83 @@ type DetailedMessage struct {
 	UpdatedAt      time.Time   `json:"updatedAt"`
 }
 
-func (c *MailClient) GetMessages(page int) ([]Message, error) {
-	var messagesResponse []Message
+func (c *MailClient) GetMessages(account *Account, page int) ([]Message, error) {
+	var response []Message
 
-	if c.Token == "" {
-		return nil, errors.New("please fetch the auth-token first using GetAuthToken()")
+	if account.Token == "" {
+		return nil, errors.New("the messages haven't been fetched because auth token hasn't been found")
 	}
 
-	req, err := http.NewRequest("GET", c.Service.Url+"/messages?page="+strconv.Itoa(page), nil)
+	req, err := http.NewRequest("GET", string(c.service)+"/messages?page="+strconv.Itoa(page), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.Token)
-	res, err := c.HttpClient.Do(req)
+	req.Header.Set("Authorization", "Bearer "+account.Token)
+	res, err := c.http.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	err = json.Unmarshal(body, &messagesResponse)
+	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return nil, err
 	}
 
-	return messagesResponse, nil
+	return response, nil
 }
 
-func (c *MailClient) GetMessageByID(id string) (*DetailedMessage, error) {
-	var message DetailedMessage
+func (c *MailClient) GetMessageByID(account *Account, id string) (*DetailedMessage, error) {
+	var response DetailedMessage
 
-	if c.Token == "" {
-		return nil, errors.New("please fetch the auth-token first using GetAuthToken()")
+	if account.Token == "" {
+		return nil, errors.New("the message hasn't been fetched because auth token hasn't been found")
 	}
 
-	req, err := http.NewRequest("GET", c.Service.Url+"/messages/"+id, nil)
+	req, err := http.NewRequest("GET", string(c.service)+"/messages/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.Token)
-	res, err := c.HttpClient.Do(req)
+	req.Header.Set("Authorization", "Bearer "+account.Token)
+	res, err := c.http.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	err = json.Unmarshal(body, &message)
+	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return nil, err
 	}
 
-	return &message, nil
+	return &response, nil
 }
 
-func (c *MailClient) DeleteMessageByID(id string) error {
-	if c.Token == "" {
-		return errors.New("please fetch the auth-token first using GetAuthToken()")
+func (c *MailClient) DeleteMessageByID(account *Account, id string) error {
+	if account.Token == "" {
+		return errors.New("the message hasn't been deleted because auth token hasn't been found")
 	}
 
-	req, err := http.NewRequest("DELETE", c.Service.Url+"/messages/"+id, nil)
+	req, err := http.NewRequest("DELETE", string(c.service)+"/messages/"+id, nil)
 	if err != nil {
 		return err
 	}
 
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.Token)
-	_, err = c.HttpClient.Do(req)
+	req.Header.Set("Authorization", "Bearer "+account.Token)
+	_, err = c.http.Do(req)
 	if err != nil {
 		return err
 	}
@@ -141,24 +141,24 @@ func (c *MailClient) DeleteMessageByID(id string) error {
 	return nil
 }
 
-func (c *MailClient) SeenMessageByID(id string) error {
-	if c.Token == "" {
-		return errors.New("please fetch the auth-token first using GetAuthToken()")
+func (c *MailClient) SeenMessageByID(account *Account, id string) error {
+	if account.Token == "" {
+		return errors.New("the message hasn't been set to seen because auth token hasn't been found")
 	}
 
 	reqBody, err := json.Marshal(map[string]bool{
 		"seen": true,
 	})
 
-	req, err := http.NewRequest("PATCH", c.Service.Url+"/messages/"+id, bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest("PATCH", string(c.service)+"/messages/"+id, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}
 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+c.Token)
-	_, err = c.HttpClient.Do(req)
+	req.Header.Set("Authorization", "Bearer "+account.Token)
+	_, err = c.http.Do(req)
 	if err != nil {
 		return err
 	}
