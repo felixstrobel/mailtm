@@ -32,7 +32,7 @@ func (c *MailClient) NewAccount() (*Account, error) {
 	return c.NewAccountWithPassword(password)
 }
 
-func (c *MailClient) NewAccountWithPassword(password string) (*Account, error) {
+func (c *MailClient) NewCustomAccount(username string, password string) (*Account, error) {
 	var account Account
 
 	domains, err := c.GetDomains()
@@ -43,13 +43,7 @@ func (c *MailClient) NewAccountWithPassword(password string) (*Account, error) {
 		return nil, errors.New("account hasn't been created due to receiving no domains from the server")
 	}
 
-	handle, err := RandomString(20)
-	if err != nil {
-		return nil, err
-	}
-
-	address := handle + "@" + domains[0].TLD
-
+	address := username + "@" + domains[0].TLD
 	reqBody, err := json.Marshal(map[string]string{
 		"address":  address,
 		"password": password,
@@ -86,6 +80,15 @@ func (c *MailClient) NewAccountWithPassword(password string) (*Account, error) {
 	}
 
 	return &account, c.addAuthToken(&account)
+}
+
+func (c *MailClient) NewAccountWithPassword(password string) (*Account, error) {
+	handle, err := RandomString(20)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.NewCustomAccount(handle, password)
 }
 
 func (c *MailClient) RetrieveAccount(address string, password string) (*Account, error) {
