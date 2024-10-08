@@ -76,7 +76,7 @@ func (c *MailClient) GetMessages(account *Account, page int) ([]Message, error) 
 		return nil, errors.New("the messages haven't been fetched because auth token hasn't been found")
 	}
 
-	req, err := http.NewRequest("GET", string(c.service)+"/messages?page="+strconv.Itoa(page), nil)
+	req, err := http.NewRequest("GET", string(c.Service)+"/messages?page="+strconv.Itoa(page), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func (c *MailClient) GetMessageByID(account *Account, id string) (*DetailedMessa
 		return nil, errors.New("the message hasn't been fetched because auth token hasn't been found")
 	}
 
-	req, err := http.NewRequest("GET", string(c.service)+"/messages/"+id, nil)
+	req, err := http.NewRequest("GET", string(c.Service)+"/messages/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +138,7 @@ func (c *MailClient) DeleteMessageByID(account *Account, id string) error {
 		return errors.New("the message hasn't been deleted because auth token hasn't been found")
 	}
 
-	req, err := http.NewRequest("DELETE", string(c.service)+"/messages/"+id, nil)
+	req, err := http.NewRequest("DELETE", string(c.Service)+"/messages/"+id, nil)
 	if err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (c *MailClient) SeenMessageByID(account *Account, id string) error {
 		"seen": true,
 	})
 
-	req, err := http.NewRequest("PATCH", string(c.service)+"/messages/"+id, bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest("PATCH", string(c.Service)+"/messages/"+id, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}

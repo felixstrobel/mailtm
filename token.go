@@ -20,7 +20,7 @@ func (c *MailClient) addAuthToken(account *Account) error {
 		"password": account.Password,
 	})
 
-	req, err := http.NewRequest("POST", string(c.service)+"/token", bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest("POST", string(c.Service)+"/token", bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}

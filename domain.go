@@ -19,7 +19,7 @@ type Domain struct {
 func (c *MailClient) GetDomains() ([]Domain, error) {
 	var response []Domain
 
-	req, err := http.NewRequest("GET", string(c.service)+"/domains", nil)
+	req, err := http.NewRequest("GET", string(c.Service)+"/domains", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *MailClient) GetDomains() ([]Domain, error) {
 func (c *MailClient) GetDomainByID(id string) (*Domain, error) {
 	var response Domain
 
-	req, err := http.NewRequest("GET", string(c.service)+"/domains/"+id, nil)
+	req, err := http.NewRequest("GET", string(c.Service)+"/domains/"+id, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -12,9 +12,9 @@ const (
 
 type MailClient struct {
 	http    *http.Client
-	service Service
+	Service Service
 }
 
 func New() (*MailClient, error) {
-	return &MailClient{service: MAIL_TM, http: &http.Client{}}, nil
+	return &MailClient{Service: MAIL_TM, http: &http.Client{}}, nil
 }

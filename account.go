@@ -55,7 +55,7 @@ func (c *MailClient) NewAccountWithPassword(password string) (*Account, error) {
 		"password": password,
 	})
 
-	req, err := http.NewRequest("POST", string(c.service)+"/accounts", bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest("POST", string(c.Service)+"/accounts", bytes.NewBuffer(reqBody))
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (c *MailClient) RetrieveAccount(address string, password string) (*Account,
 func (c *MailClient) UpdateAccountInformation(account *Account) error {
 	var response Account
 
-	req, err := http.NewRequest("GET", string(c.service)+"/me", nil)
+	req, err := http.NewRequest("GET", string(c.Service)+"/me", nil)
 	if err != nil {
 		return err
 	}
@@ -145,7 +145,7 @@ func (c *MailClient) DeleteAccount(account *Account) error {
 		return errors.New("the account hasn't been deleted because auth token hasn't been found")
 	}
 
-	req, err := http.NewRequest("DELETE", string(c.service)+"/accounts/"+account.ID+"?id="+account.ID, nil)
+	req, err := http.NewRequest("DELETE", string(c.Service)+"/accounts/"+account.ID+"?id="+account.ID, nil)
 	if err != nil {
 		return err
 	}
