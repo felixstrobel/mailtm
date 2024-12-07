@@ -1,81 +1,46 @@
 package mailtm
 
 import (
-	"encoding/json"
-	"io"
+	"context"
 	"net/http"
 	"time"
 )
 
 type Domain struct {
 	ID        string    `json:"id"`
-	TLD       string    `json:"domain"`
-	IsActive  bool      `json:"isActive"`
-	IsPrivate bool      `json:"isPrivate"`
+	Domain    string    `json:"domain"` // Refers to the top-level domain
+	Active    bool      `json:"isActive"`
+	Private   bool      `json:"isPrivate"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func (c *MailClient) GetDomains() ([]Domain, error) {
-	var response []Domain
-
-	req, err := http.NewRequest("GET", string(c.service)+"/domains", nil)
+func (c *Client) GetDomains(ctx context.Context) ([]*Domain, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", c.baseUrl+"/domains", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Add("Accept", "application/json")
-	res, err := c.http.Do(req)
+	var result []*Domain
+	err = c.request(req, &result)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	err = res.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	return response, nil
+	return result, nil
 }
 
-func (c *MailClient) GetDomainByID(id string) (*Domain, error) {
-	var response Domain
-
-	req, err := http.NewRequest("GET", string(c.service)+"/domains/"+id, nil)
+func (c *Client) GetDomain(ctx context.Context, id string) (*Domain, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", c.baseUrl+"/domains/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Add("Accept", "application/json")
-	res, err := c.http.Do(req)
+	var result *Domain
+	err = c.request(req, result)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return nil, err
-	}
-
-	err = res.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	return &response, nil
+	return result, nil
 }
