@@ -47,7 +47,7 @@ func New(opts ...ClientOption) *Client {
 	return client
 }
 
-func (c *Client) authenticatedGetRequest(req *http.Request, result interface{}) error {
+func (c *Client) authenticatedRequest(req *http.Request, result interface{}) error {
 	if len(c.token) == 0 {
 		return errors.New("missing authentication")
 	}
@@ -69,6 +69,9 @@ func (c *Client) request(req *http.Request, result interface{}) error {
 	defer res.Body.Close()
 
 	//TODO: check status codes
-
-	return json.NewDecoder(res.Body).Decode(result)
+	if result == nil {
+		return nil
+	}
+	err = json.NewDecoder(res.Body).Decode(result)
+	return err
 }

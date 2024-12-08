@@ -36,11 +36,11 @@ func (c *Client) GetDomain(ctx context.Context, id string) (*Domain, error) {
 		return nil, err
 	}
 
-	var result *Domain
-	err = c.request(req, result)
+	var result Domain
+	err = c.request(req, &result)
 	if err != nil {
 		return nil, err
 	}
 
-	return result, nil
+	return &result, nil
 }

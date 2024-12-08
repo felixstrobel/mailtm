@@ -2,162 +2,74 @@ package mailtm
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
-	"errors"
-	"io"
 	"net/http"
 	"time"
 )
 
 type Account struct {
-	ID         string    `json:"id"`
-	Address    string    `json:"address"`
-	Quota      int       `json:"quota"`
-	Used       int       `json:"used"`
-	IsDisabled bool      `json:"isDisabled"`
-	IsDeleted  bool      `json:"isDeleted"`
-	CreatedAt  time.Time `json:"createdAt"`
-	UpdatedAt  time.Time `json:"updatedAt"`
-
-	Password string
-	Token    string
+	ID        string    `json:"id"`
+	Address   string    `json:"address"`
+	Quota     int       `json:"quota"`
+	Used      int       `json:"used"`
+	Disabled  bool      `json:"isDisabled"`
+	Deleted   bool      `json:"isDeleted"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func (c *MailClient) NewAccount() (*Account, error) {
-	var password, err = RandomString(16)
+func (c *Client) CreateAccount(ctx context.Context, address string, password string) (*Account, error) {
+	reqBody := struct {
+		address  string `json:"address"`
+		password string `json:"password"`
+	}{
+		address:  address,
+		password: password,
+	}
+
+	reqBodyBuffer := new(bytes.Buffer)
+	err := json.NewEncoder(reqBodyBuffer).Encode(reqBody)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.NewAccountWithPassword(password)
+	req, err := http.NewRequestWithContext(ctx, "POST", c.baseUrl+"/accounts", reqBodyBuffer)
+	if err != nil {
+		return nil, err
+	}
+
+	var result Account
+	err = c.request(req, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
-func (c *MailClient) NewAccountWithPassword(password string) (*Account, error) {
-	var account Account
-
-	domains, err := c.GetDomains()
-	if err != nil {
-		return nil, err
-	}
-	if len(domains) == 0 {
-		return nil, errors.New("account hasn't been created due to receiving no domains from the server")
-	}
-
-	handle, err := RandomString(20)
+func (c *Client) GetAccount(ctx context.Context, id string) (*Account, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", c.baseUrl+"/accounts/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	address := handle + "@" + domains[0].TLD
-
-	reqBody, err := json.Marshal(map[string]string{
-		"address":  address,
-		"password": password,
-	})
-
-	req, err := http.NewRequest("POST", string(c.service)+"/accounts", bytes.NewBuffer(reqBody))
+	var result Account
+	err = c.authenticatedRequest(req, &result)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Content-Type", "application/json")
-	res, err := c.http.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(body, &account)
-	if err != nil {
-		return nil, err
-	}
-
-	account.Address = address
-	account.Password = password
-
-	err = res.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	return &account, c.addAuthToken(&account)
+	return &result, nil
 }
 
-func (c *MailClient) RetrieveAccount(address string, password string) (*Account, error) {
-	account := &Account{Address: address, Password: password}
-	err := c.addAuthToken(account)
-	if err != nil {
-		return nil, err
-	}
-
-	err = c.UpdateAccountInformation(account)
-	if err != nil {
-		return nil, err
-	}
-
-	return account, nil
-}
-
-func (c *MailClient) UpdateAccountInformation(account *Account) error {
-	var response Account
-
-	req, err := http.NewRequest("GET", string(c.service)+"/me", nil)
+func (c *Client) DeleteAccount(ctx context.Context, id string) error {
+	req, err := http.NewRequestWithContext(ctx, "DELETE", c.baseUrl+"/accounts/"+id, nil)
 	if err != nil {
 		return err
 	}
 
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Bearer "+account.Token)
-	res, err := c.http.Do(req)
-	if err != nil {
-		return err
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return err
-	}
-
-	account.Quota = response.Quota
-	account.Used = response.Used
-	account.UpdatedAt = response.UpdatedAt
-
-	err = res.Body.Close()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (c *MailClient) DeleteAccount(account *Account) error {
-	if account.Token == "" {
-		return errors.New("the account hasn't been deleted because auth token hasn't been found")
-	}
-
-	req, err := http.NewRequest("DELETE", string(c.service)+"/accounts/"+account.ID+"?id="+account.ID, nil)
-	if err != nil {
-		return err
-	}
-
-	req.Header.Set("Authorization", "Bearer "+account.Token)
-	res, err := c.http.Do(req)
-	if err != nil {
-		return err
-	}
-	if res.StatusCode != 204 {
-		return errors.New("wasn't able to delete account")
-	}
-
-	return nil
+	// Status codes: 204 -> Account deleted
+	err = c.authenticatedRequest(req, struct{}{}) //TODO: test if the use of an empty struct is allowed
+	return err
 }
