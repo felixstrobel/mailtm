@@ -1,55 +1,60 @@
 # mailtm
 
-The `mailtm` module wraps the [Mail.tm API](https://api.mail.tm) and provides full functionality.
-
-### Install
-
-`go get github.com/felixstrobel/mailtm`
+The `mailtm` library allows communication with the [Mail.tm API](https://api.mail.tm), providing functionality for
+creating disposable email accounts and managing messages. Below are detailed instructions on how to install and use the
+wrapper
+effectively.
 
 ### Documentation
 
-Firstly, create an `MailClient` object. This is the object that communicates with the API.
+---
+
+#### 1. **Installing the Package**
+
+Run the following command to install the `mailtm` module:
+
+```bash
+go get github.com/felixstrobel/mailtm
+```
+
+---
+
+#### 2. **Creating a New `Client`**
+
+Start by creating a `Client` object. This object will act as the main entry point for interacting with the API.
+
 ```go
 import "github.com/felixstrobel/mailtm"
 
 func main() {
-    client, err := mailtm.New()
+   client, err := mailtm.New()
+   if err != nil {
+    panic(err)
+   }
+
+   // Use the `client` object to perform further operations
 }
 ```
 
-After that you can directly create an account:
-```go
-// With random password
-client.NewAccount()
+#### Using `WithBaseURL` and `WithHTTPClient` Options
 
-// With custom password
-client.NewAccountWithPassword("password")
-```
+When creating a `MailClient`, you can customize its behavior using the `WithBaseURL` and `WithHTTPClient` options:
 
-If you already have an account and know the address and password, you can simply sign back in: 
-```go
-client.RetrieveAccount("your@email.com", "your_password") 
-```
----
+1. **WithBaseURL**
+    - Use this option to specify a custom base URL for the Mail.tm API.
+      ```go
+      client, err := mailtm.New(
+          mailtm.WithBaseURL("https://custom.mail.api"), // Specify a custom API URL
+      )
+      ```
 
-##### Fetching your messages of the first page (around 30 messages):
-```go
-client.GetMessages(&account, 1)
-```
-##### Get detailed message:
-```go
-client.GetMessageByID(&account, "the_id_of_the_message")
-```
-#### Delete a message:
-```go
-client.DeleteMessageByID(&account, "the_id_of_the_message")
-```
-#### Mark a message as seen:
-```go
-client.SeenMessageByID(&account, "the_id_of_the_message")
-```
----
-If you decide to delete an account, you can use the `DeleteAccount` function to do so:
-```go
-client.DeleteAccount(&account)
-```
+2. **WithHTTPClient**
+    - Use this option to specify a custom HTTP client for the `MailClient`.
+      ```go
+      client, err := mailtm.New(
+          mailtm.WithHTTPClient(&http.Client{}), // Use a custom HTTP client
+      )
+      ```
+
+These options allow you to tailor the `MailClient` for specific requirements, such as using a proxy-enabled HTTP client
+or pointing to another instance of the Mail.tm API.
