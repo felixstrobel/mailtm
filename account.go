@@ -21,11 +21,11 @@ type Account struct {
 
 func (c *Client) CreateAccount(ctx context.Context, address string, password string) (*Account, error) {
 	reqBody := struct {
-		address  string `json:"address"`
-		password string `json:"password"`
+		Address  string `json:"address"`
+		Password string `json:"password"`
 	}{
-		address:  address,
-		password: password,
+		Address:  address,
+		Password: password,
 	}
 
 	reqBodyBuffer := new(bytes.Buffer)

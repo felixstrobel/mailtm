@@ -38,5 +38,7 @@ func (c *Client) Authenticate(ctx context.Context, address string, password stri
 		return err
 	}
 
+	c.token = result.Token
+
 	return nil
 }
